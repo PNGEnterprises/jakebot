@@ -10,6 +10,7 @@ jakeisms = [ "So how has everyone's day been?", "beep boop", "RBE is the best. Y
 bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
 channels = ["#bottest"]
+version = '0.2.3'
 
 client = Twitter::REST::Client.new do |config|
   config.consumer_key = "IOo4mv0KW65QOVh4nUYApEdML"
@@ -55,7 +56,7 @@ bot = Cinch::Bot.new do
 
     # Case of bot joining
     if m.user == bot.nick
-      m.reply "HELLO EVERYONE! I AM JAKEBOT v0.2"
+      m.reply "HELLO EVERYONE! I AM JAKEBOT v#{VERSION}"
     else
       m.channel.op(m.user)
       if welcome_messages.key?(m.user.nick)
