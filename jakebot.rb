@@ -2,17 +2,14 @@ require 'cinch'
 require 'twitter'
 require 'yaml'
 
-affirmatives = [ "Got it!", "Word.", "For sure, yo.", "Fo shizzle." ]
-welcomes = [ "What up.", "Yo!", "The funk has arrived." ]
-greetings = [ "Hello", "What up", "Hi", "How you been", "How ya doin", "Howdy" ]
-jakeisms = [ "So how has everyone's day been?", "beep boop", "RBE is the best. You guys are just jealous", "I could sure go for some Pi in me right now...", "miku es mai waifu", "I love Spanish! Quiero un mexicano que me jodas en el culo!", "hi im drum", "Destroyer 666 is actually great! You just don't understand.", "Metal is good", "The RBE lab is the best place on campus", "*sigh* I wish I was as cool as Pi.", "BOMBEROS!" ]
-
 bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
+phrases = {}
 channels = ["#bottest"]
 VERSION = '0.2.3.1'
 
 keys = YAML.load(File.read("#{bot_dir}/keys"))
+phrases = YAML.load(File.read("#{bot_dir}/phrases"))
 
 client = Twitter::REST::Client.new do |config|
   tw_keys = keys['twitter']
@@ -35,17 +32,17 @@ bot = Cinch::Bot.new do
   # Register handlers
 
   on :message, /^(hello|hi) jakebot/ do |m|
-    m.reply "#{greetings.sample} #{m.user.nick}"
+    m.reply "#{phrases['greetings'].sample} #{m.user.nick}"
   end
 
   on :message, /^!tweet (.+)/ do |m, tw|
     tweet = client.update tw
-    m.reply "#{affirmatives.sample} It's been tweeted at #{tweet.url}"
+    m.reply "#{phrases['affirmatives'].sample} It's been tweeted at #{tweet.url}"
   end
 
   on :message, /^!welcome (.+)/ do |m, message|
     welcome_messages[m.user.nick] = message
-    m.reply "#{affirmatives.sample}"
+    m.reply "#{phrases['affirmatives'].sample}"
 
     # Save the messages
     IO.write("#{bot_dir}/welcome", YAML.dump(welcome_messages))
@@ -56,7 +53,7 @@ bot = Cinch::Bot.new do
   end
 
   on :join do |m|
-    greeting = greetings.sample
+    greeting = phrases['greetings'].sample
 
     # Case of bot joining
     if m.user == bot.nick
@@ -66,7 +63,7 @@ bot = Cinch::Bot.new do
       if welcome_messages.key?(m.user.nick)
         m.reply welcome_messages[m.user.nick]
       else
-        m.reply welcomes.sample
+        m.reply phrases['welcomes'].sample
       end
     end
   end
@@ -106,9 +103,9 @@ bot = Cinch::Bot.new do
 
   # Start timers
 
-  Timer(10 * 60) { # Every 10 minutes
-    if rand < 0.25 # 25% chance
-      channels.each do |chan| Channel(chan).send(jakeisms.sample) end
+  Timer(3 * 60) { # Every 3 minutes
+    if rand < 0.1 # 1% chance
+      channels.each do |chan| Channel(chan).send(phrases['jakeisms'].sample) end
     end
   }
 end
