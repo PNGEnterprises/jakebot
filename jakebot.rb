@@ -5,7 +5,7 @@ require 'yaml'
 affirmatives = [ "Got it!", "Word.", "For sure, yo.", "Fo shizzle." ]
 welcomes = [ "What up.", "Yo!", "The funk has arrived." ]
 greetings = [ "Hello", "What up", "Hi", "How you been", "How ya doin", "Howdy" ]
-jakeisms = [ "So how has everyone's day been?", "beep boop", "RBE is the best. You guys are just jealous", "I could sure go for some Pi right now...", "miku es mai waifu", "I love Spanish! Quiero un mexicano que me jodas en el culo!" ]
+jakeisms = [ "So how has everyone's day been?", "beep boop", "RBE is the best. You guys are just jealous", "I could sure go for some Pi in me right now...", "miku es mai waifu", "I love Spanish! Quiero un mexicano que me jodas en el culo!", "hi im drum", "Destroyer 666 is actually great! You just don't understand.", "Metal is good", "The RBE lab is the best place on campus", "*sigh* I wish I was as cool as Pi.", "BOMBEROS!" ]
 
 bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
