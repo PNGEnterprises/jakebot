@@ -10,13 +10,17 @@ jakeisms = [ "So how has everyone's day been?", "beep boop", "RBE is the best. Y
 bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
 channels = ["#bottest"]
-version = '0.2.3'
+VERSION = '0.2.3.1'
+
+keys = YAML.load(File.read("#{bot_dir}/keys"))
 
 client = Twitter::REST::Client.new do |config|
-  config.consumer_key = "IOo4mv0KW65QOVh4nUYApEdML"
-  config.consumer_secret = "9ZiHRxOXu57s6zzFgP3ZkjAGEECqx8cK8DbREb3n6DRWHVe3RP"
-  config.access_token = "928490052-9HK80E324fqstddP2t782ciUaKdpPnCLdG4i3vLJ"
-  config.access_token_secret = "CY3UZ1uHPUIPekFmfuuaMGwIBfvGea5ueRoCYigLxFR44"
+  tw_keys = keys['twitter']
+
+  config.consumer_key = tw_keys['consumer_key']
+  config.consumer_secret = tw_keys['consumer_secret']
+  config.access_token = tw_keys['access_token']
+  config.access_token_secret = tw_keys['access_token_secret']
 end
 
 bot = Cinch::Bot.new do
