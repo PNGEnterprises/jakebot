@@ -8,10 +8,23 @@ phrases = {}
 channels = ["#bottest"]
 VERSION = '0.2.3.1'
 
+# Create the storage directory if it doesn't exist
+Dir.mkdir(bot_dir) unless File.exists?(bot_dir)
+
+if !(File.exists?("#{bot_dir}/keys") and File.exists?("#{bot_dir}/phrases"))
+  abort "This bot will not work until files 'phrases' and 'keys' are placed in ~/.jakebot"
+end
+
 keys = YAML.load(File.read("#{bot_dir}/keys"))
 phrases = YAML.load(File.read("#{bot_dir}/phrases"))
 
-client = Twitter::REST::Client.new do |config|
+# Load the saved welcome messages, if they exist
+if File.exists?("#{bot_dir}/welcome")
+  welcome_messages = YAML.load_file("#{bot_dir}/welcome")
+end
+
+# Load twitter client
+tw_client = Twitter::REST::Client.new do |config|
   tw_keys = keys['twitter']
 
   config.consumer_key = tw_keys['consumer_key']
@@ -27,6 +40,8 @@ bot = Cinch::Bot.new do
     c.server = "irc.phinugamma.org"
     c.channels = channels
     c.nick = "jakebot"
+    c.user = "jakebot"
+    c.realname = "Jake Mk II"
   end
 
   # Register handlers
@@ -36,7 +51,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /^!tweet (.+)/ do |m, tw|
-    tweet = client.update tw
+    tweet = tw_client.update tw
     m.reply "#{phrases['affirmatives'].sample} It's been tweeted at #{tweet.url}"
   end
 
@@ -60,7 +75,7 @@ bot = Cinch::Bot.new do
       m.reply "HELLO EVERYONE! I AM JAKEBOT v#{VERSION}"
     else
       m.channel.op(m.user)
-      if welcome_messages.key?(m.user.nick)
+      if welcome_messages.key? m.user.nick
         m.reply welcome_messages[m.user.nick]
       else
         m.reply phrases['welcomes'].sample
@@ -103,19 +118,11 @@ bot = Cinch::Bot.new do
 
   # Start timers
 
-  Timer(3 * 60) { # Every 3 minutes
-    if rand < 0.1 # 1% chance
+  Timer(3 * 59) { # Every ~3 minutes
+    if rand < 0.01 # 1% chance
       channels.each do |chan| Channel(chan).send(phrases['jakeisms'].sample) end
     end
   }
-end
-
-# Create the storage directory if it doesn't exist
-Dir.mkdir(bot_dir) unless File.exists?(bot_dir)
-
-# Load the saved welcome messages, if they exist
-if File.exists?("#{bot_dir}/welcome")
-  welcome_messages = YAML.load_file("#{bot_dir}/welcome")
 end
 
 # Start the bot
