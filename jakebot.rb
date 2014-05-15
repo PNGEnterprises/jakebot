@@ -6,7 +6,7 @@ bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
 phrases = {}
 channels = ["#bottest"]
-VERSION = '0.2.3.1'
+VERSION = '0.2.3.2'
 
 # Create the storage directory if it doesn't exist
 Dir.mkdir(bot_dir) unless File.exists?(bot_dir)
@@ -46,16 +46,16 @@ bot = Cinch::Bot.new do
 
   # Register handlers
 
-  on :message, /^(hello|hi) jakebot/ do |m|
+  on :message, /^(hello|hi) jakebot/i do |m|
     m.reply "#{phrases['greetings'].sample} #{m.user.nick}"
   end
 
-  on :message, /^!tweet (.+)/ do |m, tw|
+  on :message, /^!tweet (.+)/i do |m, tw|
     tweet = tw_client.update tw
     m.reply "#{phrases['affirmatives'].sample} It's been tweeted at #{tweet.url}"
   end
 
-  on :message, /^!welcome (.+)/ do |m, message|
+  on :message, /^!welcome (.+)/i do |m, message|
     welcome_messages[m.user.nick] = message
     m.reply "#{phrases['affirmatives'].sample}"
 
@@ -63,7 +63,7 @@ bot = Cinch::Bot.new do
     IO.write("#{bot_dir}/welcome", YAML.dump(welcome_messages))
   end
 
-  on :message, /^(.+)$/ do |m, message|
+  on :message, /^(.+)$/i do |m, message|
     # Save the message or update stats w/e
   end
 
@@ -83,7 +83,7 @@ bot = Cinch::Bot.new do
     end
   end
 
-  on :message, /^!topic ?add (.+)/ do |m, new_topic|
+  on :message, /^!topic ?add (.+)/i do |m, new_topic|
     current_topic = m.channel.topic
     if current_topic.empty? 
       m.channel.topic = new_topic
@@ -92,7 +92,7 @@ bot = Cinch::Bot.new do
     end
   end
 
-  on :message, /^!topic ?rem(ove)? (.+)/ do |m, garbage, top|
+  on :message, /^!topic ?rem(ove)? (.+)/i do |m, garbage, top|
     # Remove an items from the topic
     
     reg = Regexp.new(top, true) # Case insensitive regexp
