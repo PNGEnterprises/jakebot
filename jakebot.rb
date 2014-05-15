@@ -46,7 +46,7 @@ bot = Cinch::Bot.new do
 
   # Register handlers
 
-  on :message, /^(hello|hi) jakebot/i do |m|
+  on :message, /^(hello|hi|yo|hey|greetings|howdy) jakebot/i do |m|
     m.reply "#{phrases['greetings'].sample} #{m.user.nick}"
   end
 
@@ -61,6 +61,12 @@ bot = Cinch::Bot.new do
 
     # Save the messages
     IO.write("#{bot_dir}/welcome", YAML.dump(welcome_messages))
+  end
+  
+  on :message, /^!kill (.+)/i do |m, victim|
+	m.reply "Killing #{victim}"
+	m.reply "pew pew pew"
+	m.reply "#{victim} is dead"
   end
 
   on :message, /^(.+)$/i do |m, message|
