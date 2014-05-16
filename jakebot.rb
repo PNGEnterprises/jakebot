@@ -4,9 +4,10 @@ require 'yaml'
 
 bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
+responses = {}
 phrases = {}
 channels = ["#bottest"]
-VERSION = '0.2.4.1'
+VERSION = '0.2.5'
 
 # Create the storage directory if it doesn't exist
 Dir.mkdir(bot_dir) unless File.exists?(bot_dir)
@@ -21,6 +22,10 @@ phrases = YAML.load(File.read("#{bot_dir}/phrases"))
 # Load the saved welcome messages, if they exist
 if File.exists?("#{bot_dir}/welcome")
   welcome_messages = YAML.load_file("#{bot_dir}/welcome")
+end
+
+if File.exists? "#{bot_dir}/responses"
+  responses = YAML.load_file("#{bot_dir}/responses")
 end
 
 # Load twitter client
@@ -80,8 +85,6 @@ bot = Cinch::Bot.new do
   end
 
   on :join do |m|
-    greeting = phrases['greetings'].sample
-
     # Case of bot joining
     if m.user == bot.nick
       m.reply "HELLO EVERYONE! I AM JAKEBOT v#{VERSION}"
@@ -92,6 +95,28 @@ bot = Cinch::Bot.new do
       else
         m.reply phrases['welcomes'].sample
       end
+    end
+  end
+
+  on :message, /^!respond "(.+)" "(.+)"/i do |m, trigger, response|
+    trigger.downcase!
+    response.downcase!
+
+    if !responses.key? trigger
+      responses[trigger] = []
+    end
+    
+    responses[trigger].push response
+
+    m.reply "#{phrases['affirmatives'].sample}"
+
+    IO.write("#{bot_dir}/responses", YAML.dump(responses))
+  end
+
+  on :message, /^jakebot (.+)/i do |m, message|
+    message.downcase!
+    if responses.key? message
+      m.reply responses[message].sample 
     end
   end
 
