@@ -1,13 +1,14 @@
 require 'cinch'
 require 'twitter'
 require 'yaml'
+require './waaai.rb'
 
 bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
 responses = {}
 phrases = {}
 channels = ["#bottest"]
-VERSION = '0.2.5'
+VERSION = '0.2.6'
 
 # Create the storage directory if it doesn't exist
 Dir.mkdir(bot_dir) unless File.exists?(bot_dir)
@@ -38,6 +39,21 @@ tw_client = Twitter::REST::Client.new do |config|
   config.access_token_secret = tw_keys['access_token_secret']
 end
 
+# Utility methods
+def shorten_any_urls string
+  r = /https?:\/\/(.+)/
+
+  pieces = string.split(' ')
+  pieces.each do |piece|
+    if r =~ piece
+      string[piece] = Waaai.shorten piece
+    end
+  end
+
+  return string
+end
+
+
 bot = Cinch::Bot.new do
   # Configure the bot
 
@@ -61,6 +77,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /^!welcome (.+)/i do |m, message|
+    message = shorten_any_urls message
     welcome_messages[m.user.nick] = message
     m.reply "#{phrases['affirmatives'].sample}"
 
@@ -69,11 +86,11 @@ bot = Cinch::Bot.new do
   end
   
   on :message, /^!kill (.+)/i do |m, victim|
-	m.reply "Killing #{victim}"
-	sleep 1
-	m.reply "pew pew pew"
-	sleep 0.5
-	m.reply "#{victim} is dead"
+    m.reply "Killing #{victim}"
+    sleep 1
+    m.reply "pew pew pew"
+    sleep 0.5
+    m.reply "#{victim} is dead"
   end
   
   on :message, /^!retard/i do |m|
@@ -100,12 +117,12 @@ bot = Cinch::Bot.new do
 
   on :message, /^!respond "(.+)" "(.+)"/i do |m, trigger, response|
     trigger.downcase!
-    response.downcase!
 
     if !responses.key? trigger
       responses[trigger] = []
     end
     
+    response = shorten_any_urls response
     responses[trigger].push response
 
     m.reply "#{phrases['affirmatives'].sample}"
@@ -122,6 +139,9 @@ bot = Cinch::Bot.new do
 
   on :message, /^!topic ?add (.+)/i do |m, new_topic|
     current_topic = m.channel.topic
+
+    new_topic = shorten_any_urls new_topic
+
     if current_topic.empty? 
       m.channel.topic = new_topic
     else
