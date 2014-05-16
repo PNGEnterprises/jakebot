@@ -6,7 +6,7 @@ bot_dir = File.expand_path "~/.jakebot"
 welcome_messages = {}
 phrases = {}
 channels = ["#bottest"]
-VERSION = '0.2.3.2'
+VERSION = '0.2.4.1'
 
 # Create the storage directory if it doesn't exist
 Dir.mkdir(bot_dir) unless File.exists?(bot_dir)
@@ -65,13 +65,13 @@ bot = Cinch::Bot.new do
   
   on :message, /^!kill (.+)/i do |m, victim|
 	m.reply "Killing #{victim}"
-	sleep (1)
+	sleep 1
 	m.reply "pew pew pew"
-	sleep (.5)
+	sleep 0.5
 	m.reply "#{victim} is dead"
   end
   
-  on :message, /^!retard (.+)/i do |m|
+  on :message, /^!retard/i do |m|
     m.reply "im retarded"
   end
 
