@@ -40,7 +40,7 @@ tw_client = Twitter::REST::Client.new do |config|
 end
 
 # Utility methods
-def shorten_any_urls string
+def shorten_any_urls! string
   r = /https?:\/\/(.+)/
 
   pieces = string.split(' ')
@@ -77,7 +77,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /^!welcome (.+)/i do |m, message|
-    message = shorten_any_urls message
+    shorten_any_urls! message
     welcome_messages[m.user.nick] = message
     m.reply "#{phrases['affirmatives'].sample}"
 
@@ -122,7 +122,7 @@ bot = Cinch::Bot.new do
       responses[trigger] = []
     end
     
-    response = shorten_any_urls response
+    shorten_any_urls! response
     responses[trigger].push response
 
     m.reply "#{phrases['affirmatives'].sample}"
@@ -140,7 +140,7 @@ bot = Cinch::Bot.new do
   on :message, /^!topic ?add (.+)/i do |m, new_topic|
     current_topic = m.channel.topic
 
-    new_topic = shorten_any_urls new_topic
+    shorten_any_urls! new_topic
 
     if current_topic.empty? 
       m.channel.topic = new_topic
