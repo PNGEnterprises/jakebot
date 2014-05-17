@@ -62,12 +62,12 @@ bot = Cinch::Bot.new do
     c.channels = channels
     c.nick = "jakebot"
     c.user = "jakebot"
-    c.realname = "Jake Mk II"
+    c.realname = "Jake Mk II Electric Boogaloo"
   end
 
   # Register handlers
 
-  on :message, /^(hello|hi|yo|hey|greetings|howdy|hola) jakebot/i do |m|
+  on :message, /^(hello|hi|yo|hey|greetings|howdy|hola|salutations) jakebot/i do |m| #maybe make a new file for this?
     m.reply "#{phrases['greetings'].sample} #{m.user.nick}"
   end
 
@@ -91,6 +91,14 @@ bot = Cinch::Bot.new do
     m.reply "pew pew pew"
     sleep 0.5
     m.reply "#{victim} is dead"
+  end
+  
+  on :message, /^!suicide/i do |m|
+    m.channel.kick(m.user.nick, reason = "suicide")
+    m.reply "#{m.user} has killed himself"
+	sleep 0.75
+	m.reply "R.I.P #{m.user.nick}, you will be missed"
+	
   end
   
   on :message, /^!retard/i do |m|
